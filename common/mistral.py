@@ -15,7 +15,7 @@ class KeyPool:
             start_index (int): Indeks awal untuk round-robin (disimpan untuk kompatibilitas).
         """
         self.keys = []
-        self.current = start_index  # gunakan start_index sebagai indeks awal
+        self.current = start_index
         self.max_retries = max_retries
         self.model = model
         self.start_index = start_index
@@ -44,6 +44,15 @@ class KeyPool:
         key = self.keys[self.current % self.total]
         self.current += 1
         return key
+
+    def ask(self, prompt, image_base64=None, model=None):
+        """
+        Metode untuk kompatibilitas dengan panggilan yang mengharapkan ask().
+        Karena kita tidak punya kunci Mistral, metode ini selalu mengembalikan None
+        dan mencatat peringatan.
+        """
+        log.warning("Mistral ask() called but Mistral is disabled (no API keys or disabled).")
+        return None
 
 
 # Singleton instance, load from default location
