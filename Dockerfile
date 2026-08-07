@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     libxss1 \
     libasound2 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PORT=8080
