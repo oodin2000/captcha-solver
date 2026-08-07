@@ -1,44 +1,74 @@
-# Git
-.git/
-.gitignore
-
-# Environment & secrets
-.env
-.solver-token.env
-common/apikey.txt
-
-# Python cache
+# Python cache & compiled files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
 *.so
+*.egg
+*.egg-info/
+dist/
+build/
+develop-eggs/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.manifest
+*.spec
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Environment & secrets (jangan pernah commit!)
+.env
+.solver-token.env
+common/apikey.txt
 
 # Logs & temporary files
 logs/
 *.log
 *.tmp
 *.temp
+*.pid
+*.seed
+*.pid.lock
 
-# Arkose models (yang ingin Anda hapus dari build)
-arkose/models/
-
-# Backup & IDE files
+# IDE & editor files
+.idea/
+.vscode/
 *.swp
 *.swo
 *~
-.idea/
-.vscode/
 *.iml
+.project
+.classpath
+.settings/
 
 # OS files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Docker & CI
+# Docker & CI (opsional, tidak perlu di-versioning)
 Dockerfile
 docker-compose.yml
 .dockerignore
 .github/
 .gitlab/
+
+# Arkose models (agar tidak masuk Git, karena besar)
+arkose/models/
+
+# Railway / deployment (opsional)
+railway.json
+.railway/
