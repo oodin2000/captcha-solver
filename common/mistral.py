@@ -5,15 +5,6 @@ log = logging.getLogger("captcha-solver")
 
 class KeyPool:
     def __init__(self, key_file="common/apikey.txt", max_retries=3, model=None, start_index=0):
-        """
-        Inisialisasi KeyPool untuk Mistral API keys.
-        
-        Args:
-            key_file (str): Path ke file yang berisi API keys (satu per baris).
-            max_retries (int): Jumlah maksimum percobaan (disimpan untuk kompatibilitas).
-            model (str): Nama model Mistral (disimpan untuk kompatibilitas).
-            start_index (int): Indeks awal untuk round-robin (disimpan untuk kompatibilitas).
-        """
         self.keys = []
         self.current = start_index
         self.max_retries = max_retries
@@ -38,7 +29,6 @@ class KeyPool:
         self.total = len(self.keys)
 
     def get_key(self):
-        """Ambil satu API key secara round-robin."""
         if not self.keys:
             return None
         key = self.keys[self.current % self.total]
@@ -48,14 +38,14 @@ class KeyPool:
     def ask(self, prompt, image_base64=None, model=None):
         """
         Metode untuk kompatibilitas dengan panggilan yang mengharapkan ask().
-        Karena kita tidak punya kunci Mistral, metode ini selalu mengembalikan None
-        dan mencatat peringatan.
+        Karena kita tidak punya kunci Mistral, metode ini mengembalikan struktur
+        kosong yang valid agar kode pemanggil tidak crash.
         """
-        log.warning("Mistral ask() called but Mistral is disabled (no API keys or disabled).")
-        return None
+        log.warning("Mistral ask() called but Mistral is disabled. Returning empty response.")
+        return {"choices": [{"message": {"content": ""}}]}
 
 
-# Singleton instance, load from default location
+# Singleton instance
 _key_pool = None
 
 def get_key_pool():
