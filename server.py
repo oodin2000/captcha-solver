@@ -603,17 +603,13 @@ async def solve(req: SolveRequest = Body(..., openapi_examples=_SOLVE_EXAMPLES))
         "started_at": time.time(),
     }
     try:
-        # Global deadline: a hung browser can't wedge the per-type lock forever — the
-        # timeout cancels the coroutine, releasing the lock (caller sees 408). A solver's
-        # own no-token TimeoutError is caught INSIDE _dispatch, so a bare TimeoutError
-        # here is only ever the real deadline.
-        async with asyncio.timeout(req.timeout_s or 60):
-            result = await _dispatch(req)
+        # Global deadline menggunakan wait_for (kompatibel Python 3.8+)
+        result = await asyncio.wait_for(_dispatch(req), timeout=req.timeout_s or 60)
         # ONE success signal for every type — callers read result["solved"], never branch.
         result["solved"] = _is_solved(result)
         _log_solve(req.type, req.sitekey, req.url, result)
         return result
-    except (TimeoutError, asyncio.TimeoutError):
+    except asyncio.TimeoutError:
         raise HTTPException(408, f"solve timed out after {req.timeout_s or 60}s")
     except HTTPException:
         raise
