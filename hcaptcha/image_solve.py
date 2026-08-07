@@ -104,7 +104,14 @@ async def _pick_cells(fr, keypool, target: str, grid: int = _GRID) -> list[int]:
         f"(e.g. `3` or `1,4,9`), or `none`."
     )
     text = await asyncio.to_thread(keypool.ask, gridded, prompt)
-    log.info("_pick_cells(%r) -> %s", target, text[:120])
+    
+    # AMAN: Jika text None (Mistral disabled), log & return []
+    if text is None:
+        log.warning("_pick_cells: keypool.ask() returned None (Mistral disabled)")
+        return []
+    
+    # AMAN: Pastikan text adalah string sebelum di-slice
+    log.info("_pick_cells(%r) -> %s", target, text[:120] if isinstance(text, str) else str(text)[:120])
     nums = []
     for m in re.finditer(r"\d+", text):
         v = int(m.group())
@@ -112,8 +119,6 @@ async def _pick_cells(fr, keypool, target: str, grid: int = _GRID) -> list[int]:
             nums.append(v)
     seen = set()
     return [x for x in nums if not (x in seen or seen.add(x))]
-
-
 
 
 async def _classify_tiles(fr, keypool, target: str) -> list[int]:
@@ -173,10 +178,16 @@ async def _solve_drag(fr, page, keypool) -> bool:
         f"then where to drop it (e.g. `4,10`)."
     )
     text = await asyncio.to_thread(keypool.ask, gridded, prompt)
-    log.info("_solve_drag -> %s", text[:100])
+    
+    # AMAN: Jika text None (Mistral disabled), log & return False
+    if text is None:
+        log.warning("_solve_drag: keypool.ask() returned None (Mistral disabled)")
+        return False
+    
+    log.info("_solve_drag -> %s", text[:100] if isinstance(text, str) else str(text)[:100])
     nums = re.findall(r"\d+", text)
     if len(nums) < 2:
-        log.warning("_solve_drag: couldn't parse source/target from %r", text[:80])
+        log.warning("_solve_drag: couldn't parse source/target from %r", text[:80] if isinstance(text, str) else str(text)[:80])
         return False
     src, tgt = int(nums[0]), int(nums[-1])
     cbox = await fr.locator("canvas").bounding_box()
