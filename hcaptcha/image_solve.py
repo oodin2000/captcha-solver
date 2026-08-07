@@ -105,18 +105,26 @@ async def _pick_cells(fr, keypool, target: str, grid: int = _GRID) -> list[int]:
     )
     text = await asyncio.to_thread(keypool.ask, gridded, prompt)
     
-    # AMAN: Jika text None (Mistral disabled), log & return []
+    # Pastikan text adalah string
     if text is None:
         log.warning("_pick_cells: keypool.ask() returned None (Mistral disabled)")
         return []
+    if not isinstance(text, str):
+        log.warning("_pick_cells: keypool.ask() returned non-string type: %s", type(text).__name__)
+        text = str(text)  # konversi paksa ke string
     
-    # AMAN: Pastikan text adalah string sebelum di-slice
-    log.info("_pick_cells(%r) -> %s", target, text[:120] if isinstance(text, str) else str(text)[:120])
+    # AMAN: text sudah string
+    log.info("_pick_cells(%r) -> %s", target, text[:120])
     nums = []
-    for m in re.finditer(r"\d+", text):
-        v = int(m.group())
-        if 0 <= v < N:
-            nums.append(v)
+    try:
+        for m in re.finditer(r"\d+", text):
+            v = int(m.group())
+            if 0 <= v < N:
+                nums.append(v)
+    except TypeError as e:
+        log.error("Regex error on text: %s (type: %s)", e, type(text).__name__)
+        return []
+    
     seen = set()
     return [x for x in nums if not (x in seen or seen.add(x))]
 
@@ -179,15 +187,23 @@ async def _solve_drag(fr, page, keypool) -> bool:
     )
     text = await asyncio.to_thread(keypool.ask, gridded, prompt)
     
-    # AMAN: Jika text None (Mistral disabled), log & return False
+    # Pastikan text adalah string
     if text is None:
         log.warning("_solve_drag: keypool.ask() returned None (Mistral disabled)")
         return False
+    if not isinstance(text, str):
+        log.warning("_solve_drag: keypool.ask() returned non-string type: %s", type(text).__name__)
+        text = str(text)
     
-    log.info("_solve_drag -> %s", text[:100] if isinstance(text, str) else str(text)[:100])
-    nums = re.findall(r"\d+", text)
+    log.info("_solve_drag -> %s", text[:100])
+    try:
+        nums = re.findall(r"\d+", text)
+    except TypeError as e:
+        log.error("Regex error in _solve_drag: %s", e)
+        return False
+    
     if len(nums) < 2:
-        log.warning("_solve_drag: couldn't parse source/target from %r", text[:80] if isinstance(text, str) else str(text)[:80])
+        log.warning("_solve_drag: couldn't parse source/target from %r", text[:80])
         return False
     src, tgt = int(nums[0]), int(nums[-1])
     cbox = await fr.locator("canvas").bounding_box()
