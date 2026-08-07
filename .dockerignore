@@ -1,0 +1,14 @@
+.git/
+.gitignore
+__pycache__/
+*.pyc
+.env
+.solver-token.env
+common/apikey.txt
+arkose/models/
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
