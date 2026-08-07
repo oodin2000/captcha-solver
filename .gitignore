@@ -1,26 +1,44 @@
-# Python
+# Git
+.git/
+.gitignore
+
+# Environment & secrets
+.env
+.solver-token.env
+common/apikey.txt
+
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
-*.egg-info/
-dist/
-build/
-.venv/
+*.pyd
+.Python
+*.so
 
-# Artifacts
-.pytest_cache/
+# Logs & temporary files
+logs/
 *.log
+*.tmp
+*.temp
 
-# Credentials
-.env
-.solver-token.env
-apikey.txt
-**/apikey.txt
-
-# Local-only
-tests/
-AGENTS.md
-CLAUDE.md
-.kiro/
-# ONNX models (downloaded from HuggingFace, ~1.4GB)
+# Arkose models (yang ingin Anda hapus dari build)
 arkose/models/
+
+# Backup & IDE files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker & CI
+Dockerfile
+docker-compose.yml
+.dockerignore
+.github/
+.gitlab/
