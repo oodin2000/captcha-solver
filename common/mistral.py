@@ -4,19 +4,21 @@ import logging
 log = logging.getLogger("captcha-solver")
 
 class KeyPool:
-    def __init__(self, key_file="common/apikey.txt", max_retries=3, model=None):
+    def __init__(self, key_file="common/apikey.txt", max_retries=3, model=None, start_index=0):
         """
         Inisialisasi KeyPool untuk Mistral API keys.
         
         Args:
             key_file (str): Path ke file yang berisi API keys (satu per baris).
-            max_retries (int): Jumlah maksimum percobaan (tidak digunakan secara aktif, tapi disimpan untuk kompatibilitas).
-            model (str): Nama model Mistral (disimpan untuk kompatibilitas, tidak digunakan di sini).
+            max_retries (int): Jumlah maksimum percobaan (disimpan untuk kompatibilitas).
+            model (str): Nama model Mistral (disimpan untuk kompatibilitas).
+            start_index (int): Indeks awal untuk round-robin (disimpan untuk kompatibilitas).
         """
         self.keys = []
-        self.current = 0
+        self.current = start_index  # gunakan start_index sebagai indeks awal
         self.max_retries = max_retries
-        self.model = model  # disimpan untuk kompatibilitas jika ada yang mengakses
+        self.model = model
+        self.start_index = start_index
         
         try:
             if os.path.exists(key_file):
