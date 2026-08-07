@@ -35,17 +35,15 @@ class KeyPool:
         self.current += 1
         return key
 
-    def ask(self, prompt, image_base64=None, model=None):
+    def ask(self, image_base64=None, prompt=None, model=None):
         """
-        Metode untuk kompatibilitas dengan panggilan yang mengharapkan ask().
-        Karena kita tidak punya kunci Mistral, metode ini mengembalikan struktur
-        kosong yang valid agar kode pemanggil tidak crash.
+        Kompatibilitas dengan pemanggil. Karena Mistral dinonaktifkan,
+        kembalikan string kosong agar pemrosesan tetap berjalan tanpa error.
         """
-        log.warning("Mistral ask() called but Mistral is disabled. Returning empty response.")
-        return {"choices": [{"message": {"content": ""}}]}
+        log.warning("Mistral ask() called but Mistral is disabled. Returning empty string.")
+        return ""  # <-- string kosong, bukan None atau dict
 
-
-# Singleton instance
+# Singleton
 _key_pool = None
 
 def get_key_pool():
